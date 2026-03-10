@@ -154,7 +154,16 @@ export async function fetchPriceHistory(
     return { error: error.message, data: null };
   }
 
-  return { data, error: null };
+  // Supabase returns single joins as arrays — flatten them
+  const normalized = (data || []).map((entry: any) => ({
+    id: entry.id,
+    price: entry.price,
+    date: entry.date,
+    store: Array.isArray(entry.store) ? entry.store[0] : entry.store,
+    currency: Array.isArray(entry.currency) ? entry.currency[0] : entry.currency,
+  }));
+
+  return { data: normalized, error: null };
 }
 
 // Helper function to check and trigger price alerts

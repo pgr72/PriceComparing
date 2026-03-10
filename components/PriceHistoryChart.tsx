@@ -196,7 +196,7 @@ export default function PriceHistoryChart({ goods }: PriceHistoryChartProps) {
         setError(result.error);
         setPriceData([]);
       } else {
-        setPriceData((result.data as PriceHistoryEntry[]) || []);
+        setPriceData(result.data || []);
       }
 
       setIsLoading(false);

@@ -20,7 +20,7 @@ export async function signUp(formData: FormData) {
   const { error } = await supabase.auth.signUp(data);
 
   if (error) {
-    return { error: error.message };
+    redirect(`/auth/signup?error=${encodeURIComponent(error.message)}`);
   }
 
   revalidatePath('/', 'layout');
@@ -38,7 +38,7 @@ export async function signIn(formData: FormData) {
   const { error } = await supabase.auth.signInWithPassword(data);
 
   if (error) {
-    return { error: error.message };
+    redirect(`/auth/signin?error=${encodeURIComponent(error.message)}`);
   }
 
   revalidatePath('/', 'layout');
@@ -61,10 +61,10 @@ export async function resetPassword(formData: FormData) {
   });
 
   if (error) {
-    return { error: error.message };
+    redirect(`/auth/reset-password?error=${encodeURIComponent(error.message)}`);
   }
 
-  return { success: true, message: 'Password reset email sent. Please check your inbox.' };
+  redirect(`/auth/reset-password?success=${encodeURIComponent('En tilbakestillingslenke er sendt til din e-post.')}`);
 }
 
 export async function updatePassword(formData: FormData) {
