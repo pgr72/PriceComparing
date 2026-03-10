@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { fetchLatestSEKRate } from "@/lib/norgesbank";
 
-export default function Home() {
+export default async function Home() {
+  const sekRate = await fetchLatestSEKRate();
   return (
     <div className="min-h-screen bg-gradient-to-b from-green-50 to-white">
       {/* Header */}
@@ -11,13 +13,19 @@ export default function Home() {
           <h1 className="text-2xl font-bold text-green-600">PriceCompare</h1>
           <nav className="flex gap-4">
             <Link href="/pricelist">
-              <Button variant="ghost">Price List</Button>
+              <Button variant="ghost">Prisliste</Button>
+            </Link>
+            <Link href="/prishistorikk">
+              <Button variant="ghost">Prishistorikk</Button>
+            </Link>
+            <Link href="/handlevogn">
+              <Button variant="ghost">Handlevogn</Button>
             </Link>
             <Link href="/auth/signin">
-              <Button variant="outline">Sign In</Button>
+              <Button variant="outline">Logg inn</Button>
             </Link>
             <Link href="/auth/signup">
-              <Button>Get Started</Button>
+              <Button>Kom i gang</Button>
             </Link>
           </nav>
         </div>
@@ -26,41 +34,54 @@ export default function Home() {
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-20 text-center">
         <h2 className="text-5xl font-bold mb-6 text-gray-900">
-          Find the Best Grocery Prices
+          Finn de beste matvareprisene
         </h2>
         <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-          Compare prices across multiple stores and get instant alerts when your favorite items go on sale.
-          Save money on every shopping trip.
+          Sammenlign priser fra flere butikker og få øyeblikkelige varsler når favorittvarene dine er på tilbud.
+          Spar penger på hver handletur.
         </p>
-        <div className="flex gap-4 justify-center">
+        <div className="flex gap-4 justify-center items-center">
           <Link href="/auth/signup">
             <Button size="lg" className="text-lg px-8">
-              Start Saving Now
+              Begynn å spare nå
             </Button>
           </Link>
           <Link href="/pricelist">
             <Button size="lg" variant="outline" className="text-lg px-8">
-              View Prices
+              Se priser
             </Button>
           </Link>
+          {sekRate && (
+            <div className="flex items-center gap-2 border rounded-lg px-3 py-2 bg-white text-sm ml-4">
+              <span className="text-gray-500 font-medium">Valutakurs</span>
+              <span className="text-gray-400">|</span>
+              <span className="text-gray-500">SEK/NOK</span>
+              <span className="font-bold text-green-600">
+                {Number(sekRate.rate).toLocaleString('nb-NO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </span>
+              <span className="text-xs text-gray-400">
+                ({new Date(sekRate.date).toLocaleDateString('nb-NO', { day: '2-digit', month: '2-digit' })})
+              </span>
+            </div>
+          )}
         </div>
       </section>
 
       {/* Features Section */}
       <section className="container mx-auto px-4 py-20">
-        <h3 className="text-3xl font-bold text-center mb-12">Why Choose PriceCompare?</h3>
+        <h3 className="text-3xl font-bold text-center mb-12">Hvorfor velge PriceCompare?</h3>
         <div className="grid md:grid-cols-3 gap-8">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <span className="text-3xl">📊</span>
-                Real-Time Prices
+                Sanntidspriser
               </CardTitle>
             </CardHeader>
             <CardContent>
               <CardDescription className="text-base">
-                Access up-to-date pricing information from multiple grocery stores in your area.
-                Make informed decisions based on current market prices.
+                Få oppdatert prisinformasjon fra flere dagligvarebutikker i ditt område.
+                Ta informerte valg basert på gjeldende markedspriser.
               </CardDescription>
             </CardContent>
           </Card>
@@ -69,13 +90,13 @@ export default function Home() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <span className="text-3xl">🔔</span>
-                Price Alerts
+                Prisvarsler
               </CardTitle>
             </CardHeader>
             <CardContent>
               <CardDescription className="text-base">
-                Set custom price alerts for your favorite items. Get notified via email when prices
-                drop below your target.
+                Sett egendefinerte prisvarsler for favorittvarene dine. Få e-postvarsel når prisene
+                faller under målet ditt.
               </CardDescription>
             </CardContent>
           </Card>
@@ -84,13 +105,13 @@ export default function Home() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <span className="text-3xl">💰</span>
-                Save Money
+                Spar penger
               </CardTitle>
             </CardHeader>
             <CardContent>
               <CardDescription className="text-base">
-                Track price trends over time and discover the best deals. Our platform helps you
-                save hundreds on your grocery bills.
+                Følg prisutviklingen over tid og finn de beste tilbudene. Plattformen vår hjelper deg
+                å spare hundrevis av kroner på matvarehandlingen.
               </CardDescription>
             </CardContent>
           </Card>
@@ -100,16 +121,16 @@ export default function Home() {
       {/* How It Works */}
       <section className="bg-green-50 py-20">
         <div className="container mx-auto px-4">
-          <h3 className="text-3xl font-bold text-center mb-12">How It Works</h3>
+          <h3 className="text-3xl font-bold text-center mb-12">Slik fungerer det</h3>
           <div className="max-w-3xl mx-auto space-y-8">
             <div className="flex gap-6 items-start">
               <div className="flex-shrink-0 w-12 h-12 bg-green-600 text-white rounded-full flex items-center justify-center font-bold text-xl">
                 1
               </div>
               <div>
-                <h4 className="text-xl font-semibold mb-2">Create Your Account</h4>
+                <h4 className="text-xl font-semibold mb-2">Opprett konto</h4>
                 <p className="text-gray-600">
-                  Sign up for free in seconds and start accessing price comparisons immediately.
+                  Registrer deg gratis på sekunder og begynn å sammenligne priser med én gang.
                 </p>
               </div>
             </div>
@@ -119,9 +140,9 @@ export default function Home() {
                 2
               </div>
               <div>
-                <h4 className="text-xl font-semibold mb-2">Browse & Compare</h4>
+                <h4 className="text-xl font-semibold mb-2">Utforsk og sammenlign</h4>
                 <p className="text-gray-600">
-                  View prices for thousands of grocery items across multiple stores in your area.
+                  Se priser på tusenvis av matvarer fra flere butikker i ditt område.
                 </p>
               </div>
             </div>
@@ -131,9 +152,9 @@ export default function Home() {
                 3
               </div>
               <div>
-                <h4 className="text-xl font-semibold mb-2">Set Price Alerts</h4>
+                <h4 className="text-xl font-semibold mb-2">Sett prisvarsler</h4>
                 <p className="text-gray-600">
-                  Create custom alerts for items you buy regularly and get notified of great deals.
+                  Opprett egne varsler for varer du kjøper jevnlig og få beskjed om gode tilbud.
                 </p>
               </div>
             </div>
@@ -143,9 +164,9 @@ export default function Home() {
                 4
               </div>
               <div>
-                <h4 className="text-xl font-semibold mb-2">Start Saving</h4>
+                <h4 className="text-xl font-semibold mb-2">Begynn å spare</h4>
                 <p className="text-gray-600">
-                  Shop smarter by buying at the right time and place. Watch your savings grow!
+                  Handle smartere ved å kjøpe til rett tid og sted. Se sparingen din vokse!
                 </p>
               </div>
             </div>
@@ -155,13 +176,13 @@ export default function Home() {
 
       {/* CTA Section */}
       <section className="container mx-auto px-4 py-20 text-center">
-        <h3 className="text-3xl font-bold mb-6">Ready to Start Saving?</h3>
+        <h3 className="text-3xl font-bold mb-6">Klar til å begynne å spare?</h3>
         <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-          Join thousands of smart shoppers who are already saving money with PriceCompare.
+          Bli med tusenvis av smarte handlere som allerede sparer penger med PriceCompare.
         </p>
         <Link href="/auth/signup">
           <Button size="lg" className="text-lg px-8">
-            Create Free Account
+            Opprett gratis konto
           </Button>
         </Link>
       </section>
@@ -169,7 +190,7 @@ export default function Home() {
       {/* Footer */}
       <footer className="border-t bg-gray-50 py-8">
         <div className="container mx-auto px-4 text-center text-gray-600">
-          <p>&copy; 2024 PriceCompare. All rights reserved.</p>
+          <p>&copy; 2024 PriceCompare. Alle rettigheter forbeholdt.</p>
         </div>
       </footer>
     </div>

@@ -30,13 +30,16 @@ export default function StoresManager({
   const [isAdding, setIsAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [message, setMessage] = useState('');
+  const [isError, setIsError] = useState(false);
 
   async function handleCreate(formData: FormData) {
     const result = await createStore(formData);
     if (result.error) {
+      setIsError(true);
       setMessage(result.error);
     } else {
-      setMessage('Store created successfully!');
+      setIsError(false);
+      setMessage('Butikk opprettet!');
       setIsAdding(false);
     }
   }
@@ -44,20 +47,24 @@ export default function StoresManager({
   async function handleUpdate(id: string, formData: FormData) {
     const result = await updateStore(id, formData);
     if (result.error) {
+      setIsError(true);
       setMessage(result.error);
     } else {
-      setMessage('Store updated successfully!');
+      setIsError(false);
+      setMessage('Butikk oppdatert!');
       setEditingId(null);
     }
   }
 
   async function handleDelete(id: string) {
-    if (!confirm('Are you sure you want to delete this store?')) return;
+    if (!confirm('Er du sikker på at du vil slette denne butikken?')) return;
     const result = await deleteStore(id);
     if (result.error) {
+      setIsError(true);
       setMessage(result.error);
     } else {
-      setMessage('Store deleted successfully!');
+      setIsError(false);
+      setMessage('Butikk slettet!');
     }
   }
 
@@ -66,7 +73,7 @@ export default function StoresManager({
       {message && (
         <div
           className={`p-3 rounded-lg text-sm ${
-            message.includes('success')
+            !isError
               ? 'bg-green-50 text-green-800'
               : 'bg-red-50 text-red-800'
           }`}
@@ -75,27 +82,26 @@ export default function StoresManager({
         </div>
       )}
 
-      {/* Add New Store Form */}
       {isAdding ? (
         <form action={handleCreate} className="space-y-4 p-4 bg-green-50 rounded-lg">
-          <h3 className="font-semibold">Add New Store</h3>
+          <h3 className="font-semibold">Legg til ny butikk</h3>
           <div className="grid md:grid-cols-3 gap-4">
             <div>
-              <Label htmlFor="name">Store Name</Label>
+              <Label htmlFor="name">Butikknavn</Label>
               <Input id="name" name="name" required />
             </div>
             <div>
-              <Label htmlFor="location">Location</Label>
-              <Input id="location" name="location" placeholder="City, State" />
+              <Label htmlFor="location">Sted</Label>
+              <Input id="location" name="location" placeholder="By, Fylke" />
             </div>
             <div>
-              <Label htmlFor="country_id">Country</Label>
+              <Label htmlFor="country_id">Land</Label>
               <select
                 id="country_id"
                 name="country_id"
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
               >
-                <option value="">Select country</option>
+                <option value="">Velg land</option>
                 {countries.map((country) => (
                   <option key={country.id} value={country.id}>
                     {country.name}
@@ -105,17 +111,16 @@ export default function StoresManager({
             </div>
           </div>
           <div className="flex gap-2">
-            <Button type="submit">Create</Button>
+            <Button type="submit">Opprett</Button>
             <Button type="button" variant="outline" onClick={() => setIsAdding(false)}>
-              Cancel
+              Avbryt
             </Button>
           </div>
         </form>
       ) : (
-        <Button onClick={() => setIsAdding(true)}>Add New Store</Button>
+        <Button onClick={() => setIsAdding(true)}>Legg til ny butikk</Button>
       )}
 
-      {/* Stores List */}
       <div className="space-y-3">
         {stores.map((store) =>
           editingId === store.id ? (
@@ -126,21 +131,21 @@ export default function StoresManager({
             >
               <div className="grid md:grid-cols-3 gap-4">
                 <div>
-                  <Label>Store Name</Label>
+                  <Label>Butikknavn</Label>
                   <Input name="name" defaultValue={store.name} required />
                 </div>
                 <div>
-                  <Label>Location</Label>
+                  <Label>Sted</Label>
                   <Input name="location" defaultValue={store.location || ''} />
                 </div>
                 <div>
-                  <Label>Country</Label>
+                  <Label>Land</Label>
                   <select
                     name="country_id"
                     defaultValue={store.country_id || ''}
                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                   >
-                    <option value="">Select country</option>
+                    <option value="">Velg land</option>
                     {countries.map((country) => (
                       <option key={country.id} value={country.id}>
                         {country.name}
@@ -151,7 +156,7 @@ export default function StoresManager({
               </div>
               <div className="flex gap-2">
                 <Button type="submit" size="sm">
-                  Save
+                  Lagre
                 </Button>
                 <Button
                   type="button"
@@ -159,7 +164,7 @@ export default function StoresManager({
                   variant="outline"
                   onClick={() => setEditingId(null)}
                 >
-                  Cancel
+                  Avbryt
                 </Button>
               </div>
             </form>
@@ -173,10 +178,10 @@ export default function StoresManager({
               </div>
               <div className="flex gap-2">
                 <Button size="sm" variant="outline" onClick={() => setEditingId(store.id)}>
-                  Edit
+                  Rediger
                 </Button>
                 <Button size="sm" variant="destructive" onClick={() => handleDelete(store.id)}>
-                  Delete
+                  Slett
                 </Button>
               </div>
             </div>

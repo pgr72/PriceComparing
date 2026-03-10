@@ -18,13 +18,16 @@ export default function GoodsManager({ goods }: { goods: Good[] }) {
   const [isAdding, setIsAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [message, setMessage] = useState('');
+  const [isError, setIsError] = useState(false);
 
   async function handleCreate(formData: FormData) {
     const result = await createGood(formData);
     if (result.error) {
+      setIsError(true);
       setMessage(result.error);
     } else {
-      setMessage('Good created successfully!');
+      setIsError(false);
+      setMessage('Vare opprettet!');
       setIsAdding(false);
     }
   }
@@ -32,20 +35,24 @@ export default function GoodsManager({ goods }: { goods: Good[] }) {
   async function handleUpdate(id: string, formData: FormData) {
     const result = await updateGood(id, formData);
     if (result.error) {
+      setIsError(true);
       setMessage(result.error);
     } else {
-      setMessage('Good updated successfully!');
+      setIsError(false);
+      setMessage('Vare oppdatert!');
       setEditingId(null);
     }
   }
 
   async function handleDelete(id: string) {
-    if (!confirm('Are you sure you want to delete this good?')) return;
+    if (!confirm('Er du sikker på at du vil slette denne varen?')) return;
     const result = await deleteGood(id);
     if (result.error) {
+      setIsError(true);
       setMessage(result.error);
     } else {
-      setMessage('Good deleted successfully!');
+      setIsError(false);
+      setMessage('Vare slettet!');
     }
   }
 
@@ -54,7 +61,7 @@ export default function GoodsManager({ goods }: { goods: Good[] }) {
       {message && (
         <div
           className={`p-3 rounded-lg text-sm ${
-            message.includes('success')
+            !isError
               ? 'bg-green-50 text-green-800'
               : 'bg-red-50 text-red-800'
           }`}
@@ -63,40 +70,38 @@ export default function GoodsManager({ goods }: { goods: Good[] }) {
         </div>
       )}
 
-      {/* Add New Good Form */}
       {isAdding ? (
         <form action={handleCreate} className="space-y-4 p-4 bg-green-50 rounded-lg">
-          <h3 className="font-semibold">Add New Good</h3>
+          <h3 className="font-semibold">Legg til ny vare</h3>
           <div className="grid md:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="name">Name</Label>
+              <Label htmlFor="name">Navn</Label>
               <Input id="name" name="name" required />
             </div>
             <div>
-              <Label htmlFor="unit">Unit</Label>
-              <Input id="unit" name="unit" placeholder="kg, liter, piece" required />
+              <Label htmlFor="unit">Enhet</Label>
+              <Input id="unit" name="unit" placeholder="kg, liter, stk" required />
             </div>
             <div>
-              <Label htmlFor="category">Category</Label>
-              <Input id="category" name="category" placeholder="Fruits, Dairy, etc." />
+              <Label htmlFor="category">Kategori</Label>
+              <Input id="category" name="category" placeholder="Frukt, Meieri, osv." />
             </div>
             <div>
-              <Label htmlFor="description">Description</Label>
+              <Label htmlFor="description">Beskrivelse</Label>
               <Input id="description" name="description" />
             </div>
           </div>
           <div className="flex gap-2">
-            <Button type="submit">Create</Button>
+            <Button type="submit">Opprett</Button>
             <Button type="button" variant="outline" onClick={() => setIsAdding(false)}>
-              Cancel
+              Avbryt
             </Button>
           </div>
         </form>
       ) : (
-        <Button onClick={() => setIsAdding(true)}>Add New Good</Button>
+        <Button onClick={() => setIsAdding(true)}>Legg til ny vare</Button>
       )}
 
-      {/* Goods List */}
       <div className="space-y-3">
         {goods.map((good) =>
           editingId === good.id ? (
@@ -107,25 +112,25 @@ export default function GoodsManager({ goods }: { goods: Good[] }) {
             >
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
-                  <Label>Name</Label>
+                  <Label>Navn</Label>
                   <Input name="name" defaultValue={good.name} required />
                 </div>
                 <div>
-                  <Label>Unit</Label>
+                  <Label>Enhet</Label>
                   <Input name="unit" defaultValue={good.unit} required />
                 </div>
                 <div>
-                  <Label>Category</Label>
+                  <Label>Kategori</Label>
                   <Input name="category" defaultValue={good.category || ''} />
                 </div>
                 <div>
-                  <Label>Description</Label>
+                  <Label>Beskrivelse</Label>
                   <Input name="description" defaultValue={good.description || ''} />
                 </div>
               </div>
               <div className="flex gap-2">
                 <Button type="submit" size="sm">
-                  Save
+                  Lagre
                 </Button>
                 <Button
                   type="button"
@@ -133,7 +138,7 @@ export default function GoodsManager({ goods }: { goods: Good[] }) {
                   variant="outline"
                   onClick={() => setEditingId(null)}
                 >
-                  Cancel
+                  Avbryt
                 </Button>
               </div>
             </form>
@@ -142,7 +147,7 @@ export default function GoodsManager({ goods }: { goods: Good[] }) {
               <div>
                 <p className="font-medium">{good.name}</p>
                 <p className="text-sm text-gray-500">
-                  {good.category} • Unit: {good.unit}
+                  {good.category} • Enhet: {good.unit}
                 </p>
                 {good.description && (
                   <p className="text-sm text-gray-600 mt-1">{good.description}</p>
@@ -150,10 +155,10 @@ export default function GoodsManager({ goods }: { goods: Good[] }) {
               </div>
               <div className="flex gap-2">
                 <Button size="sm" variant="outline" onClick={() => setEditingId(good.id)}>
-                  Edit
+                  Rediger
                 </Button>
                 <Button size="sm" variant="destructive" onClick={() => handleDelete(good.id)}>
-                  Delete
+                  Slett
                 </Button>
               </div>
             </div>

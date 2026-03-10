@@ -20,14 +20,12 @@ export default async function Dashboard() {
     redirect('/auth/signin');
   }
 
-  // Fetch user's profile
   const { data: profile } = await supabase
     .from('profiles')
     .select('*')
     .eq('id', user.id)
     .single();
 
-  // Fetch user's price alerts
   const { data: alerts } = await supabase
     .from('price_alerts')
     .select(`
@@ -38,11 +36,9 @@ export default async function Dashboard() {
     .eq('user_id', user.id)
     .order('created_at', { ascending: false });
 
-  // Fetch available goods and currencies for the form
   const { data: goods } = await supabase.from('goods').select('*').order('name');
   const { data: currencies } = await supabase.from('currencies').select('*');
 
-  // Fetch recent best deals (prices below average)
   const { data: recentPrices } = await supabase
     .from('prices')
     .select(`
@@ -57,7 +53,6 @@ export default async function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
       <header className="bg-white border-b">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <Link href="/">
@@ -66,12 +61,6 @@ export default async function Dashboard() {
           <nav className="flex gap-4 items-center">
             <Link href="/pricelist">
               <Button variant="ghost">Prisliste</Button>
-            </Link>
-            <Link href="/prishistorikk">
-              <Button variant="ghost">Prishistorikk</Button>
-            </Link>
-            <Link href="/handlevogn">
-              <Button variant="ghost">Handlevogn</Button>
             </Link>
             {profile?.is_admin && (
               <Link href="/admin">
@@ -87,23 +76,21 @@ export default async function Dashboard() {
         </div>
       </header>
 
-      {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h2 className="text-3xl font-bold mb-2">Velkommen, {profile?.full_name}!</h2>
           <p className="text-gray-600">
-            Administrer prisvarsler og følg med på de beste tilbudene
+            Administrer prisvarslene dine og følg med på de beste tilbudene
           </p>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-8">
-          {/* Price Alerts Section */}
           <div className="space-y-6">
             <Card>
               <CardHeader>
                 <CardTitle>Dine prisvarsler</CardTitle>
                 <CardDescription>
-                  Få varsler når prisene faller under målet ditt
+                  Få varsel når prisene faller under målet ditt
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -115,7 +102,7 @@ export default async function Dashboard() {
               <CardHeader>
                 <CardTitle>Opprett nytt varsel</CardTitle>
                 <CardDescription>
-                  Sett en målpris for et produkt
+                  Angi en målpris for et produkt
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -124,13 +111,12 @@ export default async function Dashboard() {
             </Card>
           </div>
 
-          {/* Recent Deals Section */}
           <div>
             <Card>
               <CardHeader>
                 <CardTitle>Siste tilbud (siste 7 dager)</CardTitle>
                 <CardDescription>
-                  Se de nyeste prisoppdateringene
+                  Se de siste prisoppdateringene
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -152,12 +138,11 @@ export default async function Dashboard() {
                         </div>
                         <div className="text-right">
                           <p className="text-xl font-bold text-green-600">
-                            {price.currency.symbol} {Number(price.price).toLocaleString('nb-NO')}
+                            {price.currency.symbol}{price.price}
                           </p>
                           <p className="text-xs text-gray-500">
                             per {price.good.unit}
                           </p>
-
                         </div>
                       </div>
                     ))

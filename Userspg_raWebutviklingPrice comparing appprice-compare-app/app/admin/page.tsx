@@ -21,7 +21,6 @@ export default async function AdminPage() {
     redirect('/auth/signin');
   }
 
-  // Check if user is admin
   const { data: profile } = await supabase
     .from('profiles')
     .select('is_admin')
@@ -32,7 +31,6 @@ export default async function AdminPage() {
     redirect('/dashboard');
   }
 
-  // Fetch all data needed for admin operations
   const [
     { data: goods },
     { data: stores },
@@ -58,7 +56,6 @@ export default async function AdminPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
       <header className="bg-white border-b">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <Link href="/">
@@ -66,7 +63,7 @@ export default async function AdminPage() {
           </Link>
           <nav className="flex gap-4 items-center">
             <Link href="/dashboard">
-              <Button variant="ghost">Dashbord</Button>
+              <Button variant="ghost">Oversikt</Button>
             </Link>
             <Link href="/pricelist">
               <Button variant="ghost">Prisliste</Button>
@@ -80,7 +77,6 @@ export default async function AdminPage() {
         </div>
       </header>
 
-      {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h2 className="text-3xl font-bold mb-2">Adminpanel</h2>
@@ -90,10 +86,9 @@ export default async function AdminPage() {
         </div>
 
         <div className="space-y-8">
-          {/* Goods Management */}
           <Card>
             <CardHeader>
-              <CardTitle>Varebehandling</CardTitle>
+              <CardTitle>Vareadministrasjon</CardTitle>
               <CardDescription>
                 Legg til, rediger eller fjern produkter fra databasen
               </CardDescription>
@@ -103,10 +98,9 @@ export default async function AdminPage() {
             </CardContent>
           </Card>
 
-          {/* Stores Management */}
           <Card>
             <CardHeader>
-              <CardTitle>Butikkbehandling</CardTitle>
+              <CardTitle>Butikkadministrasjon</CardTitle>
               <CardDescription>
                 Administrer butikklokasjoner
               </CardDescription>
@@ -116,10 +110,9 @@ export default async function AdminPage() {
             </CardContent>
           </Card>
 
-          {/* Prices Management */}
           <Card>
             <CardHeader>
-              <CardTitle>Prisbehandling</CardTitle>
+              <CardTitle>Prisadministrasjon</CardTitle>
               <CardDescription>
                 Oppdater prisinformasjon for produkter
               </CardDescription>

@@ -80,7 +80,7 @@ export default function PriceAlertList({ alerts }: { alerts: Alert[] }) {
           <div className="flex justify-between items-center text-sm">
             <span className="text-gray-600">Mål:</span>
             <span className="font-semibold text-green-600">
-              {alert.currency.symbol} {Number(alert.target_price).toLocaleString('nb-NO')} per {alert.good.unit}
+              {alert.currency.symbol}{alert.target_price} per {alert.good.unit}
             </span>
           </div>
           <p className="text-xs text-gray-400 mt-2">

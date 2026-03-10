@@ -1,7 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { createClient } from '@/lib/supabase/server';
+import { createClient, createAdminClient } from '@/lib/supabase/server';
 import { sendPriceAlertEmail } from '@/lib/email';
 
 export async function createPrice(formData: FormData) {
@@ -129,6 +129,34 @@ export async function deletePrice(id: string) {
   return { success: true };
 }
 
+export async function fetchPriceHistory(
+  goodId: string,
+  startDate: string,
+  endDate: string
+) {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from('prices')
+    .select(`
+      id,
+      price,
+      date,
+      store:stores(name, location),
+      currency:currencies(code, symbol)
+    `)
+    .eq('good_id', goodId)
+    .gte('date', startDate)
+    .lte('date', endDate)
+    .order('date', { ascending: true });
+
+  if (error) {
+    return { error: error.message, data: null };
+  }
+
+  return { data, error: null };
+}
+
 // Helper function to check and trigger price alerts
 async function checkPriceAlerts(
   goodId: string,
@@ -138,38 +166,31 @@ async function checkPriceAlerts(
 ) {
   console.log('🔍 Checking price alerts...');
   
-  const supabase = await createClient();
-  
-  // Check current user
-  const { data: { user } } = await supabase.auth.getUser();
-  console.log('👤 Current user:', user?.id);
-  console.log('👤 User email:', user?.email);
+  const supabase = createAdminClient();
 
   console.log('Good ID:', goodId);
   console.log('Current Price:', currentPrice);
   console.log('Currency ID:', currencyId);
-  
 
-  // First, let's see ALL alerts for this good
-  const { data: allAlerts } = await supabase
+
+  // First, let's see ALL alerts for this good (no user join — user_id refs auth.users which PostgREST can't join)
+  const { data: allAlerts, error: allAlertsError } = await supabase
     .from('price_alerts')
     .select(`
       *,
-      user:user_id (email),
       good:good_id (name),
       currency:currency_id (code, symbol)
     `)
     .eq('good_id', goodId);
 
   console.log('📋 All alerts for this good:', allAlerts?.length || 0);
-  console.log('All alert details:', JSON.stringify(allAlerts, null, 2));
+  if (allAlertsError) console.log('❌ Query error:', allAlertsError.message);
 
   // Now get the filtered alerts
-  const { data: alerts } = await supabase
+  const { data: alerts, error: alertsError } = await supabase
     .from('price_alerts')
     .select(`
       *,
-      user:user_id (email),
       good:good_id (name),
       currency:currency_id (code, symbol)
     `)
@@ -179,15 +200,10 @@ async function checkPriceAlerts(
     .gte('target_price', currentPrice);
 
   console.log('📧 Alerts after filtering:', alerts?.length || 0);
-  console.log('Filtered alert details:', JSON.stringify(alerts, null, 2));
+  if (alertsError) console.log('❌ Filter query error:', alertsError.message);
 
   if (!alerts || alerts.length === 0) {
     console.log('❌ No alerts to trigger');
-    console.log('Checking conditions:');
-    console.log('  - good_id matches:', goodId);
-    console.log('  - currency_id matches:', currencyId);
-    console.log('  - is_active = true?');
-    console.log('  - target_price >= currentPrice?', currentPrice);
     return;
   }
 
@@ -198,18 +214,21 @@ async function checkPriceAlerts(
     .eq('id', storeId)
     .single();
 
-    console.log('🏪 Store:', store?.name);
+  console.log('🏪 Store:', store?.name);
 
   // Send email alerts
   for (const alert of alerts) {
-    const userEmail = (alert.user as any)?.email;
     const goodName = (alert.good as any)?.name;
     const currency = alert.currency as any;
+
+    // Fetch user email via admin auth API (auth.users is not accessible via PostgREST joins)
+    const { data: { user: alertUser } } = await supabase.auth.admin.getUserById(alert.user_id);
+    const userEmail = alertUser?.email;
 
     console.log('📨 Attempting to send email to:', userEmail);
 
     if (userEmail && goodName && currency && store) {
-      await sendPriceAlertEmail({
+      const result = await sendPriceAlertEmail({
         to: userEmail,
         goodName,
         currentPrice,
@@ -217,7 +236,7 @@ async function checkPriceAlerts(
         currency: currency.symbol,
         storeName: store.name,
       });
-    console.log('✉️ Email result:', result);
+      console.log('✉️ Email result:', result);
     } else {
       console.log('⚠️ Missing data for email:', { userEmail, goodName, currency, store });
     }

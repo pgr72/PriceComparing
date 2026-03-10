@@ -5,8 +5,8 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Price Compare - Find the Best Grocery Deals",
-  description: "Compare grocery prices across multiple stores and get notified when prices drop",
+  title: "PriceCompare – Finn de beste matvareprisene",
+  description: "Sammenlign matvarepriser fra flere butikker og få varsel når prisene faller",
 };
 
 export default function RootLayout({
@@ -15,7 +15,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="no">
       <body className={inter.className}>{children}</body>
     </html>
   );
