@@ -6,7 +6,7 @@ import { fetchLatestSEKRate } from "@/lib/norgesbank";
 export default async function Home() {
   const sekRate = await fetchLatestSEKRate();
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
+    <div className="min-h-screen bg-gradient-to-b from-blue-200 to-white">
       {/* Header */}
       <header className="border-b bg-white/80 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
@@ -75,13 +75,13 @@ export default async function Home() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <span className="text-3xl">📊</span>
-                Sanntidspriser
+                Faktisk registrerte priser
               </CardTitle>
             </CardHeader>
             <CardContent>
               <CardDescription className="text-base">
-                Få oppdatert prisinformasjon fra flere dagligvarebutikker i ditt område.
-                Ta informerte valg basert på gjeldende markedspriser.
+                Prisene hentes fra virkelige handleturer.Utvalget varer og priser kan derfor være noe begrenset.
+                Det registreres stadig nye produkter og priser så datagrunnlaget blir bedre og bedre.
               </CardDescription>
             </CardContent>
           </Card>
@@ -105,7 +105,7 @@ export default async function Home() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <span className="text-3xl">💰</span>
-                Spar penger
+                Hvilke butikker har lavest priser?
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -190,7 +190,7 @@ export default async function Home() {
       {/* Footer */}
       <footer className="border-t bg-gray-50 py-8">
         <div className="container mx-auto px-4 text-center text-gray-600">
-          <p>&copy; 2024 PriceCompare. Alle rettigheter forbeholdt.</p>
+          <p>&copy; 2024 PriceCompare. Utviklet av og med Claude.Code. Alle rettigheter forbeholdt Rækken.</p>
         </div>
       </footer>
     </div>

@@ -19,7 +19,7 @@ export default async function PriceList() {
       currency:currencies(code, symbol)
     `)
     .order('date', { ascending: false })
-    .limit(100);
+    .limit(500);
 
   // Group prices by good
   const groupedPrices = prices?.reduce((acc: any, price: any) => {

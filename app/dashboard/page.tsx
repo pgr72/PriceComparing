@@ -128,7 +128,7 @@ export default async function Dashboard() {
           <div>
             <Card>
               <CardHeader>
-                <CardTitle>Siste tilbud (siste 7 dager)</CardTitle>
+                <CardTitle>Sist registrerte priser (siste 7 dager)</CardTitle>
                 <CardDescription>
                   Se de nyeste prisoppdateringene
                 </CardDescription>
