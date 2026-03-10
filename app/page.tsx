@@ -6,7 +6,7 @@ import { fetchLatestSEKRate } from "@/lib/norgesbank";
 export default async function Home() {
   const sekRate = await fetchLatestSEKRate();
   return (
-    <div className="min-h-screen bg-gradient-to-b from-green-50 to-white">
+    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
       {/* Header */}
       <header className="border-b bg-white/80 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
@@ -119,7 +119,7 @@ export default async function Home() {
       </section>
 
       {/* How It Works */}
-      <section className="bg-green-50 py-20">
+      <section className="bg-blue-50 py-20">
         <div className="container mx-auto px-4">
           <h3 className="text-3xl font-bold text-center mb-12">Slik fungerer det</h3>
           <div className="max-w-3xl mx-auto space-y-8">
