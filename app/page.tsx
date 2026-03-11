@@ -10,7 +10,7 @@ export default async function Home() {
       {/* Header */}
       <header className="border-b bg-white/80 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-green-600">PriceCompare</h1>
+          <h1 className="text-2xl font-bold text-blue-900">PriceCompare</h1>
           <nav className="flex gap-4">
             <Link href="/pricelist">
               <Button variant="ghost">Prisliste</Button>

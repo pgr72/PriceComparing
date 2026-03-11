@@ -52,11 +52,11 @@ export default async function Handlevogn() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b">
+    <div className="min-h-screen bg-gradient-to-b from-blue-100 to-white">
+      <header className="border-b bg-white/80 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <Link href="/">
-            <h1 className="text-2xl font-bold text-green-600">PriceCompare</h1>
+            <h1 className="text-2xl font-bold text-blue-900">PriceCompare</h1>
           </Link>
           <nav className="flex gap-4">
             <Link href="/">

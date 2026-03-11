@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 
 export default function SignUp({ searchParams }: { searchParams: { error?: string } }) {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-green-50 to-white p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-blue-100 to-white p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl">Opprett konto</CardTitle>
