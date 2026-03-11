@@ -128,7 +128,7 @@ export default async function Home() {
                 1
               </div>
               <div>
-                <h4 className="text-xl font-semibold mb-2">Opprett konto</h4>
+                <h4 className="text-xl font-semibold mb-2">Opprett konto (for å sette opp prisvarsling)</h4>
                 <p className="text-gray-600">
                   Registrer deg gratis på sekunder og begynn å sammenligne priser med én gang.
                 </p>
@@ -142,7 +142,7 @@ export default async function Home() {
               <div>
                 <h4 className="text-xl font-semibold mb-2">Utforsk og sammenlign</h4>
                 <p className="text-gray-600">
-                  Se priser på tusenvis av matvarer fra flere butikker i ditt område.
+                  Se priser på hundrevis av matvarer fra flere butikker i ditt område.
                 </p>
               </div>
             </div>
@@ -178,7 +178,7 @@ export default async function Home() {
       <section className="container mx-auto px-4 py-20 text-center">
         <h3 className="text-3xl font-bold mb-6">Klar til å begynne å spare?</h3>
         <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-          Bli med tusenvis av smarte handlere som allerede sparer penger med PriceCompare.
+          Bli med andre smarte handlere som allerede sparer penger med PriceCompare.
         </p>
         <Link href="/auth/signup">
           <Button size="lg" className="text-lg px-8">
