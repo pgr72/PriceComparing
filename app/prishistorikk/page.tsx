@@ -48,7 +48,7 @@ export default async function PriceHistory() {
 
         <PriceHistoryChart goods={goods || []} />
 
-        <div className="mt-8">
+        <div id="valutakurs" className="mt-8 scroll-mt-8">
           <ExchangeRateChart />
         </div>
       </main>
