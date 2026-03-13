@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { fetchLatestSEKRate } from "@/lib/norgesbank";
+import { fetchAndStoreLatestSEKRate } from "@/lib/norgesbank";
 
 export default async function Home() {
-  const sekRate = await fetchLatestSEKRate();
+  const sekRate = await fetchAndStoreLatestSEKRate();
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-200 to-white">
       {/* Header */}

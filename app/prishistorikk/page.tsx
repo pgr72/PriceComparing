@@ -2,6 +2,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import PriceHistoryChart from "@/components/PriceHistoryChart";
+import ExchangeRateChart from "@/components/ExchangeRateChart";
 
 export const dynamic = 'force-dynamic';
 
@@ -46,6 +47,10 @@ export default async function PriceHistory() {
         </div>
 
         <PriceHistoryChart goods={goods || []} />
+
+        <div className="mt-8">
+          <ExchangeRateChart />
+        </div>
       </main>
     </div>
   );
