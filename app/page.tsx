@@ -53,7 +53,7 @@ export default async function Home() {
           </Link>
         </div>
         {sekRate && (
-          <div className="flex flex-col items-start mt-6 max-w-2xl mx-auto">
+          <div className="flex flex-col items-center mt-6 max-w-2xl mx-auto">
             <p className="text-sm text-gray-600 mb-1">Handler du i Sverige? Her er valutakursen.</p>
             <Link href="/prishistorikk#valutakurs">
               <div className="flex items-center gap-2 border rounded-lg px-3 py-2 bg-white text-sm hover:shadow-md transition-shadow cursor-pointer">
