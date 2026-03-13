@@ -35,6 +35,40 @@ const TIME_PERIOD_DAYS: Record<TimePeriod, number> = {
   '365d': 365,
 };
 
+function CustomXAxisTick({ x, y, payload, chartData }: any) {
+  const rawDate = payload.value;
+  const index = chartData.findIndex((d: ChartDataPoint) => d.rawDate === rawDate);
+  const currentYear = rawDate?.substring(0, 4) || '';
+  const formattedDate = rawDate
+    ? new Date(rawDate).toLocaleDateString('nb-NO', { day: '2-digit', month: '2-digit' })
+    : '';
+
+  let showYear = false;
+  if (currentYear && index >= 0) {
+    if (index === 0) {
+      showYear = true;
+    } else {
+      const prevYear = chartData[index - 1]?.rawDate?.substring(0, 4);
+      if (prevYear !== currentYear) {
+        showYear = true;
+      }
+    }
+  }
+
+  return (
+    <g transform={`translate(${x},${y})`}>
+      <text x={0} y={0} dy={16} textAnchor="middle" fontSize={12} fill="#666">
+        {formattedDate}
+      </text>
+      {showYear && (
+        <text x={0} y={0} dy={30} textAnchor="middle" fontSize={11} fill="#999">
+          {currentYear}
+        </text>
+      )}
+    </g>
+  );
+}
+
 function CustomTooltip({ active, payload, label }: any) {
   if (!active || !payload?.length) return null;
   const formattedDate = label
@@ -118,15 +152,13 @@ export default function ExchangeRateChart() {
           </div>
         ) : (
           <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={data} margin={{ bottom: 10 }}>
+            <LineChart data={data} margin={{ bottom: 20 }}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis
                 dataKey="rawDate"
-                tick={{ fontSize: 12 }}
-                tickFormatter={(value) =>
-                  new Date(value).toLocaleDateString('nb-NO', { day: '2-digit', month: '2-digit' })
-                }
+                tick={<CustomXAxisTick chartData={data} />}
                 interval="preserveStartEnd"
+                height={50}
               />
               <YAxis
                 tick={{ fontSize: 12 }}
