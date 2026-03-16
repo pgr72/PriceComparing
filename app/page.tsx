@@ -196,6 +196,9 @@ export default async function Home() {
       <footer className="border-t bg-gray-50 py-8">
         <div className="container mx-auto px-4 text-center text-gray-600">
           <p>&copy; 2024 PriceCompare. Utviklet av og med Claude.Code. Alle rettigheter forbeholdt Rækken.</p>
+          <Link href="/personvern" className="text-sm text-gray-500 hover:text-gray-700 mt-2 inline-block">
+            Personvernerklæring
+          </Link>
         </div>
       </footer>
     </div>
