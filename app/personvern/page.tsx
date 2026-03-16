@@ -31,7 +31,7 @@ export default function Personvern() {
           <section>
             <h3 className="text-xl font-semibold text-gray-900 mb-3">1. Behandlingsansvarlig</h3>
             <p>
-              Pre Gunnar Rækken er behandlingsansvarlig for behandlingen av personopplysninger
+              Per Gunnar Rækken er behandlingsansvarlig for behandlingen av personopplysninger
               på PriceCompare. Har du spørsmål om personvern, kan du kontakte oss på{" "}
               <a href="mailto:pg.rakken@gmail.com" className="text-blue-700 underline">
                 pg.rakken@gmail.com
