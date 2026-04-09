@@ -96,11 +96,11 @@ export default async function Harryhandel() {
 
   const cheaperInSweden = items
     .filter(i => i.differenceNOK > 0)
-    .sort((a, b) => b.differenceNOK - a.differenceNOK);
+    .sort((a, b) => b.differencePercent - a.differencePercent);
 
   const cheaperInNorway = items
     .filter(i => i.differenceNOK < 0)
-    .sort((a, b) => a.differenceNOK - b.differenceNOK);
+    .sort((a, b) => a.differencePercent - b.differencePercent);
 
   const formatNOK = (v: number) => v.toLocaleString('nb-NO', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
@@ -152,8 +152,8 @@ export default async function Harryhandel() {
             </CardContent>
           </Card>
         ) : (
-          <div className="space-y-10">
-            {/* Cheaper in Sweden */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Cheaper in Sweden (left) */}
             <section>
               <h3 className="text-2xl font-bold mb-4">Varer det lønner seg å handle i Sverige</h3>
               {cheaperInSweden.length === 0 ? (
@@ -163,25 +163,25 @@ export default async function Harryhandel() {
                   {cheaperInSweden.map((item) => (
                     <Card key={item.goodName}>
                       <CardContent className="py-4">
-                        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-                          <div className="flex-1">
-                            <p className="font-semibold text-lg">{item.goodName}</p>
-                            <p className="text-sm text-gray-500">{item.unit}{item.category ? ` · ${item.category}` : ''}</p>
+                        <div className="flex items-center justify-between gap-3">
+                          <div className="flex-1 min-w-0">
+                            <p className="font-semibold">{item.goodName}</p>
+                            <p className="text-xs text-gray-500">{item.unit}{item.category ? ` · ${item.category}` : ''}</p>
                           </div>
-                          <div className="flex flex-col md:flex-row gap-4 md:items-center text-sm">
-                            <div className="text-center md:text-right">
-                              <p className="text-gray-500">Norge</p>
+                          <div className="flex gap-4 items-center text-sm shrink-0">
+                            <div className="text-right">
+                              <p className="text-xs text-gray-500">Norge</p>
                               <p className="font-medium">kr {formatNOK(item.cheapestNO)}</p>
                               <p className="text-xs text-gray-400">{item.cheapestNOStore}</p>
                             </div>
-                            <div className="text-center md:text-right">
-                              <p className="text-gray-500">Sverige</p>
+                            <div className="text-right">
+                              <p className="text-xs text-gray-500">Sverige</p>
                               <p className="font-medium">kr {formatNOK(item.cheapestSE)}</p>
                               <p className="text-xs text-gray-400">{item.cheapestSEStore}</p>
                             </div>
-                            <div className="text-center md:text-right min-w-[100px]">
-                              <p className="text-green-700 font-bold">Spar kr {formatNOK(item.differenceNOK)}</p>
-                              <p className="text-xs text-green-600">({Math.abs(item.differencePercent).toFixed(1)}%)</p>
+                            <div className="text-right min-w-[90px]">
+                              <p className="text-green-700 font-bold">-{Math.abs(item.differencePercent).toFixed(1)}%</p>
+                              <p className="text-xs text-green-600">kr {formatNOK(item.differenceNOK)}</p>
                             </div>
                           </div>
                         </div>
@@ -192,7 +192,7 @@ export default async function Harryhandel() {
               )}
             </section>
 
-            {/* Cheaper in Norway */}
+            {/* Cheaper in Norway (right) */}
             <section>
               <h3 className="text-2xl font-bold mb-4">Varer det lønner seg å handle i Norge</h3>
               {cheaperInNorway.length === 0 ? (
@@ -202,25 +202,25 @@ export default async function Harryhandel() {
                   {cheaperInNorway.map((item) => (
                     <Card key={item.goodName}>
                       <CardContent className="py-4">
-                        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-                          <div className="flex-1">
-                            <p className="font-semibold text-lg">{item.goodName}</p>
-                            <p className="text-sm text-gray-500">{item.unit}{item.category ? ` · ${item.category}` : ''}</p>
+                        <div className="flex items-center justify-between gap-3">
+                          <div className="flex-1 min-w-0">
+                            <p className="font-semibold">{item.goodName}</p>
+                            <p className="text-xs text-gray-500">{item.unit}{item.category ? ` · ${item.category}` : ''}</p>
                           </div>
-                          <div className="flex flex-col md:flex-row gap-4 md:items-center text-sm">
-                            <div className="text-center md:text-right">
-                              <p className="text-gray-500">Norge</p>
+                          <div className="flex gap-4 items-center text-sm shrink-0">
+                            <div className="text-right">
+                              <p className="text-xs text-gray-500">Norge</p>
                               <p className="font-medium">kr {formatNOK(item.cheapestNO)}</p>
                               <p className="text-xs text-gray-400">{item.cheapestNOStore}</p>
                             </div>
-                            <div className="text-center md:text-right">
-                              <p className="text-gray-500">Sverige</p>
+                            <div className="text-right">
+                              <p className="text-xs text-gray-500">Sverige</p>
                               <p className="font-medium">kr {formatNOK(item.cheapestSE)}</p>
                               <p className="text-xs text-gray-400">{item.cheapestSEStore}</p>
                             </div>
-                            <div className="text-center md:text-right min-w-[100px]">
-                              <p className="text-blue-700 font-bold">Spar kr {formatNOK(Math.abs(item.differenceNOK))}</p>
-                              <p className="text-xs text-blue-600">({Math.abs(item.differencePercent).toFixed(1)}%)</p>
+                            <div className="text-right min-w-[90px]">
+                              <p className="text-blue-700 font-bold">-{Math.abs(item.differencePercent).toFixed(1)}%</p>
+                              <p className="text-xs text-blue-600">kr {formatNOK(Math.abs(item.differenceNOK))}</p>
                             </div>
                           </div>
                         </div>
