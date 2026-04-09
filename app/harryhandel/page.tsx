@@ -1,8 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { fetchAndStoreLatestSEKRate } from "@/lib/norgesbank";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 
 export const dynamic = 'force-dynamic';
 
@@ -12,8 +11,7 @@ interface HarryhandelItem {
   category: string;
   cheapestNO: number;
   cheapestNOStore: string;
-  cheapestSE_SEK: number;
-  cheapestSE_NOK: number;
+  cheapestSE: number;
   cheapestSEStore: string;
   differenceNOK: number;
   differencePercent: number;
@@ -22,21 +20,15 @@ interface HarryhandelItem {
 export default async function Harryhandel() {
   const supabase = await createClient();
 
-  const [{ data: prices }, sekRate] = await Promise.all([
-    supabase
-      .from('prices')
-      .select(`
-        price,
-        date,
-        good:goods(id, name, unit, category),
-        store:stores(name, location, country:countries(code)),
-        currency:currencies(code)
-      `)
-      .order('date', { ascending: false }),
-    fetchAndStoreLatestSEKRate(),
-  ]);
-
-  const rate = sekRate?.rate ?? 1;
+  const { data: prices } = await supabase
+    .from('prices')
+    .select(`
+      price,
+      date,
+      good:goods(id, name, unit, category),
+      store:stores(name, location, country:countries(code))
+    `)
+    .order('date', { ascending: false });
 
   // Group by good and find cheapest price per country
   const goodMap = new Map<string, {
@@ -45,14 +37,13 @@ export default async function Harryhandel() {
     category: string;
     cheapestNO: number | null;
     cheapestNOStore: string;
-    cheapestSE_SEK: number | null;
+    cheapestSE: number | null;
     cheapestSEStore: string;
   }>();
 
   for (const p of prices || []) {
     const good = p.good as any;
     const store = p.store as any;
-    const currency = p.currency as any;
     if (!good?.id || !store?.country?.code) continue;
 
     const countryCode = store.country.code as string;
@@ -65,7 +56,7 @@ export default async function Harryhandel() {
         category: good.category || '',
         cheapestNO: null,
         cheapestNOStore: '',
-        cheapestSE_SEK: null,
+        cheapestSE: null,
         cheapestSEStore: '',
       });
     }
@@ -78,8 +69,8 @@ export default async function Harryhandel() {
       entry.cheapestNOStore = `${store.name}${store.location ? `, ${store.location}` : ''}`;
     }
 
-    if (countryCode === 'SE' && (entry.cheapestSE_SEK === null || price < entry.cheapestSE_SEK)) {
-      entry.cheapestSE_SEK = price;
+    if (countryCode === 'SE' && (entry.cheapestSE === null || price < entry.cheapestSE)) {
+      entry.cheapestSE = price;
       entry.cheapestSEStore = `${store.name}${store.location ? `, ${store.location}` : ''}`;
     }
   }
@@ -87,9 +78,8 @@ export default async function Harryhandel() {
   // Build comparison items (only products in both countries)
   const items: HarryhandelItem[] = [];
   for (const entry of goodMap.values()) {
-    if (entry.cheapestNO === null || entry.cheapestSE_SEK === null) continue;
-    const cheapestSE_NOK = entry.cheapestSE_SEK * rate;
-    const differenceNOK = entry.cheapestNO - cheapestSE_NOK;
+    if (entry.cheapestNO === null || entry.cheapestSE === null) continue;
+    const differenceNOK = entry.cheapestNO - entry.cheapestSE;
     const differencePercent = (differenceNOK / entry.cheapestNO) * 100;
     items.push({
       goodName: entry.goodName,
@@ -97,8 +87,7 @@ export default async function Harryhandel() {
       category: entry.category,
       cheapestNO: entry.cheapestNO,
       cheapestNOStore: entry.cheapestNOStore,
-      cheapestSE_SEK: entry.cheapestSE_SEK,
-      cheapestSE_NOK: cheapestSE_NOK,
+      cheapestSE: entry.cheapestSE,
       cheapestSEStore: entry.cheapestSEStore,
       differenceNOK,
       differencePercent,
@@ -114,7 +103,6 @@ export default async function Harryhandel() {
     .sort((a, b) => a.differenceNOK - b.differenceNOK);
 
   const formatNOK = (v: number) => v.toLocaleString('nb-NO', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  const formatSEK = (v: number) => v.toLocaleString('nb-NO', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-100 to-white">
@@ -147,14 +135,11 @@ export default async function Harryhandel() {
         <div className="mb-8">
           <h2 className="text-3xl font-bold mb-2">Harryhandel</h2>
           <p className="text-gray-600">
-            Sammenlign priser mellom norske og svenske butikker. Alle svenske priser er omregnet til NOK.
+            Sammenlign priser mellom norske og svenske butikker.
           </p>
-          {sekRate && (
-            <p className="text-sm text-gray-500 mt-2">
-              Valutakurs SEK/NOK: <span className="font-semibold text-blue-700">{formatNOK(rate)}</span>
-              {' '}({new Date(sekRate.date).toLocaleDateString('nb-NO', { day: '2-digit', month: '2-digit', year: 'numeric' })})
-            </p>
-          )}
+          <p className="text-sm text-gray-500 mt-2">
+            Alle priser er oppgitt i NOK, omregnet etter valutakurs på handledagen.
+          </p>
         </div>
 
         {items.length === 0 ? (
@@ -191,7 +176,7 @@ export default async function Harryhandel() {
                             </div>
                             <div className="text-center md:text-right">
                               <p className="text-gray-500">Sverige</p>
-                              <p className="font-medium">{formatSEK(item.cheapestSE_SEK)} SEK = kr {formatNOK(item.cheapestSE_NOK)}</p>
+                              <p className="font-medium">kr {formatNOK(item.cheapestSE)}</p>
                               <p className="text-xs text-gray-400">{item.cheapestSEStore}</p>
                             </div>
                             <div className="text-center md:text-right min-w-[100px]">
@@ -230,7 +215,7 @@ export default async function Harryhandel() {
                             </div>
                             <div className="text-center md:text-right">
                               <p className="text-gray-500">Sverige</p>
-                              <p className="font-medium">{formatSEK(item.cheapestSE_SEK)} SEK = kr {formatNOK(item.cheapestSE_NOK)}</p>
+                              <p className="font-medium">kr {formatNOK(item.cheapestSE)}</p>
                               <p className="text-xs text-gray-400">{item.cheapestSEStore}</p>
                             </div>
                             <div className="text-center md:text-right min-w-[100px]">
