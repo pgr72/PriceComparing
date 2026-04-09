@@ -18,6 +18,9 @@ export default async function Home() {
             <Link href="/prishistorikk">
               <Button variant="ghost">Prishistorikk</Button>
             </Link>
+            <Link href="/harryhandel">
+              <Button variant="ghost">Harryhandel</Button>
+            </Link>
             <Link href="/handlevogn">
               <Button variant="ghost">Handlevogn</Button>
             </Link>
@@ -55,19 +58,27 @@ export default async function Home() {
         {sekRate && (
           <div className="flex flex-col items-center mt-6 max-w-2xl mx-auto">
             <p className="text-sm font-medium text-gray-800 mb-1">Handler du i Sverige? Her er valutakursen.</p>
-            <Link href="/prishistorikk#valutakurs">
-              <div className="flex items-center gap-2 border rounded-lg px-3 py-2 bg-white text-sm hover:shadow-md transition-shadow cursor-pointer">
-                <span className="text-gray-500 font-medium">Valutakurs</span>
-                <span className="text-gray-400">|</span>
-                <span className="text-gray-500">SEK/NOK</span>
-                <span className="font-bold text-blue-700">
-                  {Number(sekRate.rate).toLocaleString('nb-NO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                </span>
-                <span className="text-xs text-gray-400">
-                  ({new Date(sekRate.date).toLocaleDateString('nb-NO', { day: '2-digit', month: '2-digit' })})
-                </span>
-              </div>
-            </Link>
+            <div className="flex items-center gap-3 flex-wrap justify-center">
+              <Link href="/prishistorikk#valutakurs">
+                <div className="flex items-center gap-2 border rounded-lg px-3 py-2 bg-white text-sm hover:shadow-md transition-shadow cursor-pointer">
+                  <span className="text-gray-500 font-medium">Valutakurs</span>
+                  <span className="text-gray-400">|</span>
+                  <span className="text-gray-500">SEK/NOK</span>
+                  <span className="font-bold text-blue-700">
+                    {Number(sekRate.rate).toLocaleString('nb-NO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </span>
+                  <span className="text-xs text-gray-400">
+                    ({new Date(sekRate.date).toLocaleDateString('nb-NO', { day: '2-digit', month: '2-digit' })})
+                  </span>
+                </div>
+              </Link>
+              <Link href="/harryhandel">
+                <div className="flex items-center gap-2 border rounded-lg px-3 py-2 bg-white text-sm hover:shadow-md transition-shadow cursor-pointer">
+                  <span className="font-medium text-blue-700">Harryhandel</span>
+                  <span className="text-gray-400">&#8594;</span>
+                </div>
+              </Link>
+            </div>
           </div>
         )}
       </section>
