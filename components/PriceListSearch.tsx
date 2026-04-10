@@ -175,7 +175,6 @@ export default function PriceListSearch({ groupedPrices }: PriceListSearchProps)
                     >
                       <div>
                         <p className="font-medium">{price.store.name}</p>
-                        <p className="text-sm text-gray-500">{price.store.location}</p>
                       </div>
                       <div className="text-right">
                         <p className="text-lg font-semibold">
