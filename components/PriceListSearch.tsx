@@ -169,6 +169,7 @@ export default function PriceListSearch({ groupedPrices }: PriceListSearchProps)
                     <p className="text-2xl font-bold text-green-600">
                       {lowestPrice.currency.symbol} {Number(lowestPrice.price).toLocaleString('nb-NO')}
                     </p>
+                    <p className="text-sm text-gray-500">{lowestPrice.store.name}</p>
                   </div>
                 </div>
               </CardHeader>
