@@ -136,9 +136,19 @@ export default function PriceListSearch({ groupedPrices }: PriceListSearchProps)
       <div className="grid gap-6">
         {filteredEntries.map(([goodName, data]) => {
           const store = storeQuery.toLowerCase().trim();
-          const visiblePrices = store
+          const filteredByStore = store
             ? data.prices.filter(p => p.store.name.toLowerCase().includes(store))
             : data.prices;
+
+          // Keep only the latest price per store
+          const latestByStore = new Map<string, PriceEntry>();
+          for (const p of filteredByStore) {
+            const existing = latestByStore.get(p.store.name);
+            if (!existing || new Date(p.date) > new Date(existing.date)) {
+              latestByStore.set(p.store.name, p);
+            }
+          }
+          const visiblePrices = Array.from(latestByStore.values());
 
           const lowestPrice = visiblePrices.reduce((min, p) =>
             p.price < min.price ? p : min
