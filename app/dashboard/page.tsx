@@ -1,11 +1,10 @@
 import { redirect } from "next/navigation";
-import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { signOut } from "@/app/actions/auth";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import PriceAlertForm from "@/components/PriceAlertForm";
 import PriceAlertList from "@/components/PriceAlertList";
+import Header from "@/components/Header";
 
 export const dynamic = 'force-dynamic';
 
@@ -57,35 +56,7 @@ export default async function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-100 to-white">
-      {/* Header */}
-      <header className="border-b bg-white/80 backdrop-blur-sm">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <Link href="/">
-            <h1 className="text-2xl font-bold text-blue-900">PriceCompare</h1>
-          </Link>
-          <nav className="flex gap-4 items-center">
-            <Link href="/pricelist">
-              <Button variant="ghost">Prisliste</Button>
-            </Link>
-            <Link href="/prishistorikk">
-              <Button variant="ghost">Prishistorikk</Button>
-            </Link>
-            <Link href="/handlevogn">
-              <Button variant="ghost">Handlevogn</Button>
-            </Link>
-            {profile?.is_admin && (
-              <Link href="/admin">
-                <Button variant="outline">Admin</Button>
-              </Link>
-            )}
-            <form action={signOut}>
-              <Button variant="outline" type="submit">
-                Logg ut
-              </Button>
-            </form>
-          </nav>
-        </div>
-      </header>
+      <Header variant="authenticated" isAdmin={profile?.is_admin} signOutAction={signOut} />
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">

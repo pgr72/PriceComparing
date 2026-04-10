@@ -1,12 +1,11 @@
 import { redirect } from "next/navigation";
-import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { signOut } from "@/app/actions/auth";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import GoodsManager from "@/components/admin/GoodsManager";
 import StoresManager from "@/components/admin/StoresManager";
 import PricesManager from "@/components/admin/PricesManager";
+import Header from "@/components/Header";
 
 export const dynamic = 'force-dynamic';
 
@@ -58,27 +57,7 @@ export default async function AdminPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-100 to-white">
-      {/* Header */}
-      <header className="border-b bg-white/80 backdrop-blur-sm">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <Link href="/">
-            <h1 className="text-2xl font-bold text-blue-900">PriceCompare Admin</h1>
-          </Link>
-          <nav className="flex gap-4 items-center">
-            <Link href="/dashboard">
-              <Button variant="ghost">Dashbord</Button>
-            </Link>
-            <Link href="/pricelist">
-              <Button variant="ghost">Prisliste</Button>
-            </Link>
-            <form action={signOut}>
-              <Button variant="outline" type="submit">
-                Logg ut
-              </Button>
-            </form>
-          </nav>
-        </div>
-      </header>
+      <Header variant="admin" signOutAction={signOut} />
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">

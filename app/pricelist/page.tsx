@@ -1,8 +1,7 @@
-import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import PriceListSearch from "@/components/PriceListSearch";
+import Header from "@/components/Header";
 
 export const dynamic = 'force-dynamic';
 
@@ -36,28 +35,7 @@ export default async function PriceList() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-100 to-white">
-      {/* Header */}
-      <header className="border-b bg-white/80 backdrop-blur-sm">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <Link href="/">
-            <h1 className="text-2xl font-bold text-blue-900">PriceCompare</h1>
-          </Link>
-          <nav className="flex gap-4">
-            <Link href="/">
-              <Button variant="ghost">Hjem</Button>
-            </Link>
-            <Link href="/prishistorikk">
-              <Button variant="ghost">Prishistorikk</Button>
-            </Link>
-            <Link href="/handlevogn">
-              <Button variant="ghost">Handlevogn</Button>
-            </Link>
-            <Link href="/auth/signin">
-              <Button variant="outline">Logg inn</Button>
-            </Link>
-          </nav>
-        </div>
-      </header>
+      <Header />
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">

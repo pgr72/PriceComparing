@@ -1,7 +1,6 @@
-import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import Header from "@/components/Header";
 
 export const dynamic = 'force-dynamic';
 
@@ -106,30 +105,7 @@ export default async function Harryhandel() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-100 to-white">
-      <header className="border-b bg-white/80 backdrop-blur-sm">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <Link href="/">
-            <h1 className="text-2xl font-bold text-blue-900">PriceCompare</h1>
-          </Link>
-          <nav className="flex gap-4">
-            <Link href="/">
-              <Button variant="ghost">Hjem</Button>
-            </Link>
-            <Link href="/pricelist">
-              <Button variant="ghost">Prisliste</Button>
-            </Link>
-            <Link href="/prishistorikk">
-              <Button variant="ghost">Prishistorikk</Button>
-            </Link>
-            <Link href="/handlevogn">
-              <Button variant="ghost">Handlevogn</Button>
-            </Link>
-            <Link href="/auth/signin">
-              <Button variant="outline">Logg inn</Button>
-            </Link>
-          </nav>
-        </div>
-      </header>
+      <Header />
 
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">

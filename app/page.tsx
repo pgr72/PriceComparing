@@ -1,38 +1,13 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { fetchAndStoreLatestSEKRate } from "@/lib/norgesbank";
+import Header from "@/components/Header";
 
 export default async function Home() {
   const sekRate = await fetchAndStoreLatestSEKRate();
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-200 to-white">
-      {/* Header */}
-      <header className="border-b bg-white/80 backdrop-blur-sm">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-blue-900">PriceCompare</h1>
-          <nav className="flex gap-4">
-            <Link href="/pricelist">
-              <Button variant="ghost">Prisliste</Button>
-            </Link>
-            <Link href="/prishistorikk">
-              <Button variant="ghost">Prishistorikk</Button>
-            </Link>
-            <Link href="/harryhandel">
-              <Button variant="ghost">Harryhandel</Button>
-            </Link>
-            <Link href="/handlevogn">
-              <Button variant="ghost">Handlevogn</Button>
-            </Link>
-            <Link href="/auth/signin">
-              <Button variant="outline">Logg inn</Button>
-            </Link>
-            <Link href="/auth/signup">
-              <Button>Kom i gang</Button>
-            </Link>
-          </nav>
-        </div>
-      </header>
+      <Header />
 
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-20 text-center">
@@ -40,10 +15,10 @@ export default async function Home() {
           Finn de beste matvareprisene
         </h2>
         <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-          Sammenlign priser fra flere butikker og få øyeblikkelige varsler når favorittvarene dine er på tilbud.
+          Sammenlign priser fra flere butikker og få varsler når favorittvarene dine er på tilbud.
           Spar penger på hver handletur.
         </p>
-        <div className="flex gap-4 justify-center items-center">
+        <div className="flex gap-4 justify-center items-center flex-wrap">
           <Link href="/auth/signup">
             <Button size="lg" className="text-lg px-8">
               Begynn å spare nå
@@ -83,106 +58,43 @@ export default async function Home() {
         )}
       </section>
 
-      {/* Features Section */}
-      <section className="container mx-auto px-4 py-20">
-        <h3 className="text-3xl font-bold text-center mb-12">Hvorfor velge PriceCompare?</h3>
-        <div className="grid md:grid-cols-3 gap-8">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <span className="text-3xl">📊</span>
-                Faktisk registrerte priser
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <CardDescription className="text-base">
-                Prisene hentes fra virkelige handleturer.Utvalget varer og priser kan derfor være noe begrenset.
-                Det registreres stadig nye produkter og priser så datagrunnlaget blir bedre og bedre.
-              </CardDescription>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <span className="text-3xl">🔔</span>
-                Prisvarsler
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <CardDescription className="text-base">
-                Sett egendefinerte prisvarsler for favorittvarene dine. Få e-postvarsel når prisene
-                faller under målet ditt.
-              </CardDescription>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <span className="text-3xl">💰</span>
-                Hvilke butikker har lavest priser?
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <CardDescription className="text-base">
-                Følg prisutviklingen over tid og finn de beste tilbudene. Plattformen vår hjelper deg
-                å spare hundrevis av kroner på matvarehandlingen.
-              </CardDescription>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
-
       {/* How It Works */}
-      <section className="bg-blue-50 py-20">
+      <section className="bg-blue-50 py-16">
         <div className="container mx-auto px-4">
-          <h3 className="text-3xl font-bold text-center mb-12">Slik fungerer det</h3>
+          <h3 className="text-3xl font-bold text-center mb-10">Slik fungerer det</h3>
           <div className="max-w-3xl mx-auto space-y-8">
             <div className="flex gap-6 items-start">
-              <div className="flex-shrink-0 w-12 h-12 bg-green-600 text-white rounded-full flex items-center justify-center font-bold text-xl">
+              <div className="flex-shrink-0 w-12 h-12 bg-blue-900 text-white rounded-full flex items-center justify-center font-bold text-xl">
                 1
-              </div>
-              <div>
-                <h4 className="text-xl font-semibold mb-2">Opprett konto (for å sette opp prisvarsling)</h4>
-                <p className="text-gray-600">
-                  Registrer deg gratis på sekunder og begynn å sammenligne priser med én gang.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex gap-6 items-start">
-              <div className="flex-shrink-0 w-12 h-12 bg-green-600 text-white rounded-full flex items-center justify-center font-bold text-xl">
-                2
               </div>
               <div>
                 <h4 className="text-xl font-semibold mb-2">Utforsk og sammenlign</h4>
                 <p className="text-gray-600">
-                  Se priser på hundrevis av matvarer fra flere butikker i ditt område.
+                  Se priser på matvarer fra flere butikker — både i Norge og Sverige. Finn ut hvor du får mest for pengene.
                 </p>
               </div>
             </div>
 
             <div className="flex gap-6 items-start">
-              <div className="flex-shrink-0 w-12 h-12 bg-green-600 text-white rounded-full flex items-center justify-center font-bold text-xl">
-                3
+              <div className="flex-shrink-0 w-12 h-12 bg-blue-900 text-white rounded-full flex items-center justify-center font-bold text-xl">
+                2
               </div>
               <div>
                 <h4 className="text-xl font-semibold mb-2">Sett prisvarsler</h4>
                 <p className="text-gray-600">
-                  Opprett egne varsler for varer du kjøper jevnlig og få beskjed om gode tilbud.
+                  Opprett en gratis konto og sett opp varsler for varer du kjøper jevnlig. Få e-post når prisene faller.
                 </p>
               </div>
             </div>
 
             <div className="flex gap-6 items-start">
-              <div className="flex-shrink-0 w-12 h-12 bg-green-600 text-white rounded-full flex items-center justify-center font-bold text-xl">
-                4
+              <div className="flex-shrink-0 w-12 h-12 bg-blue-900 text-white rounded-full flex items-center justify-center font-bold text-xl">
+                3
               </div>
               <div>
-                <h4 className="text-xl font-semibold mb-2">Begynn å spare</h4>
+                <h4 className="text-xl font-semibold mb-2">Handle smartere</h4>
                 <p className="text-gray-600">
-                  Handle smartere ved å kjøpe til rett tid og sted. Se sparingen din vokse!
+                  Kjøp til rett tid og sted. Følg prisutviklingen over tid og spar penger på hver handletur.
                 </p>
               </div>
             </div>
@@ -190,26 +102,47 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="container mx-auto px-4 py-20 text-center">
-        <h3 className="text-3xl font-bold mb-6">Klar til å begynne å spare?</h3>
-        <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-          Bli med andre smarte handlere som allerede sparer penger med PriceCompare.
-        </p>
-        <Link href="/auth/signup">
-          <Button size="lg" className="text-lg px-8">
-            Opprett gratis konto
-          </Button>
-        </Link>
+      {/* Features — compact */}
+      <section className="container mx-auto px-4 py-12">
+        <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto text-center">
+          <div>
+            <span className="text-2xl">📊</span>
+            <h4 className="font-semibold mt-2 mb-1">Faktiske priser</h4>
+            <p className="text-sm text-gray-500">
+              Priser registrert fra virkelige handleturer. Datagrunnlaget vokser stadig.
+            </p>
+          </div>
+          <div>
+            <span className="text-2xl">🔔</span>
+            <h4 className="font-semibold mt-2 mb-1">Prisvarsler</h4>
+            <p className="text-sm text-gray-500">
+              Få e-post når favorittvarene dine faller under din målpris.
+            </p>
+          </div>
+          <div>
+            <span className="text-2xl">💰</span>
+            <h4 className="font-semibold mt-2 mb-1">Sammenlign butikker</h4>
+            <p className="text-sm text-gray-500">
+              Finn ut hvilke butikker som har de laveste prisene over tid.
+            </p>
+          </div>
+        </div>
       </section>
 
       {/* Footer */}
       <footer className="border-t bg-gray-50 py-8">
-        <div className="container mx-auto px-4 text-center text-gray-600">
-          <p>&copy; 2024 PriceCompare. Utviklet av og med Claude.Code. Alle rettigheter forbeholdt Rækken.</p>
-          <Link href="/personvern" className="text-sm text-gray-500 hover:text-gray-700 mt-2 inline-block">
-            Personvernerklæring
-          </Link>
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <p className="text-sm text-gray-500">
+              &copy; 2026 PriceCompare. Utviklet av og med Claude Code. Alle rettigheter forbeholdt Rækken.
+            </p>
+            <nav className="flex gap-4 text-sm text-gray-500">
+              <Link href="/pricelist" className="hover:text-gray-700">Prisliste</Link>
+              <Link href="/harryhandel" className="hover:text-gray-700">Harryhandel</Link>
+              <Link href="/prishistorikk" className="hover:text-gray-700">Prishistorikk</Link>
+              <Link href="/personvern" className="hover:text-gray-700">Personvern</Link>
+            </nav>
+          </div>
         </div>
       </footer>
     </div>
