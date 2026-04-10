@@ -65,12 +65,12 @@ export default async function Harryhandel() {
 
     if (countryCode === 'NO' && (entry.cheapestNO === null || price < entry.cheapestNO)) {
       entry.cheapestNO = price;
-      entry.cheapestNOStore = `${store.name}${store.location ? `, ${store.location}` : ''}`;
+      entry.cheapestNOStore = store.name;
     }
 
     if (countryCode === 'SE' && (entry.cheapestSE === null || price < entry.cheapestSE)) {
       entry.cheapestSE = price;
-      entry.cheapestSEStore = `${store.name}${store.location ? `, ${store.location}` : ''}`;
+      entry.cheapestSEStore = store.name;
     }
   }
 
