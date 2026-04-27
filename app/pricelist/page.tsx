@@ -5,7 +5,12 @@ import Header from "@/components/Header";
 
 export const dynamic = 'force-dynamic';
 
-export default async function PriceList() {
+export default async function PriceList({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string }>;
+}) {
+  const { q } = await searchParams;
   const supabase = await createClient();
 
   // Fetch all prices with related data
@@ -56,7 +61,7 @@ export default async function PriceList() {
             </CardContent>
           </Card>
         ) : (
-          <PriceListSearch groupedPrices={groupedPrices} />
+          <PriceListSearch groupedPrices={groupedPrices} initialQuery={q} />
         )}
       </main>
     </div>

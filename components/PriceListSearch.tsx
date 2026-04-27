@@ -22,10 +22,11 @@ interface GroupedProduct {
 
 interface PriceListSearchProps {
   groupedPrices: Record<string, GroupedProduct>;
+  initialQuery?: string;
 }
 
-export default function PriceListSearch({ groupedPrices }: PriceListSearchProps) {
-  const [productQuery, setProductQuery] = useState('');
+export default function PriceListSearch({ groupedPrices, initialQuery = '' }: PriceListSearchProps) {
+  const [productQuery, setProductQuery] = useState(initialQuery);
   const [storeQuery, setStoreQuery] = useState('');
   const [categoryQuery, setCategoryQuery] = useState('');
 

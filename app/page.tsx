@@ -2,34 +2,92 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { fetchAndStoreLatestSEKRate } from "@/lib/norgesbank";
 import Header from "@/components/Header";
+import HomepageSearch from "@/components/HomepageSearch";
+import { createClient } from "@/lib/supabase/server";
+
+export const dynamic = 'force-dynamic';
+
+interface PriceEntry {
+  id: string;
+  price: number;
+  date: string;
+  good: { name: string; unit: string; category: string };
+  store: { name: string };
+  currency: { symbol: string };
+}
+
+async function getBestPrices() {
+  const supabase = await createClient();
+  const { data: prices } = await supabase
+    .from('prices')
+    .select(`
+      id, price, date,
+      good:goods(name, unit, category),
+      store:stores(name),
+      currency:currencies(symbol)
+    `)
+    .order('date', { ascending: false })
+    .limit(300);
+
+  if (!prices || prices.length === 0) return [];
+
+  // Group by good, keep latest price per store
+  const grouped: Record<string, { good: PriceEntry['good']; latestByStore: Map<string, PriceEntry> }> = {};
+  for (const p of prices as PriceEntry[]) {
+    const name = p.good.name;
+    if (!grouped[name]) grouped[name] = { good: p.good, latestByStore: new Map() };
+    const existing = grouped[name].latestByStore.get(p.store.name);
+    if (!existing || new Date(p.date) > new Date(existing.date)) {
+      grouped[name].latestByStore.set(p.store.name, p);
+    }
+  }
+
+  // For each good, find the lowest price entry
+  const bestPerGood = Object.entries(grouped).map(([name, { good, latestByStore }]) => {
+    const entries = Array.from(latestByStore.values());
+    const best = entries.reduce((min, p) => (p.price < min.price ? p : min));
+    return { name, good, best, storeCount: entries.length };
+  });
+
+  // Return up to 6, sorted by most recently updated
+  return bestPerGood.slice(0, 6);
+}
 
 export default async function Home() {
-  const sekRate = await fetchAndStoreLatestSEKRate();
+  const [sekRate, bestPrices] = await Promise.all([
+    fetchAndStoreLatestSEKRate(),
+    getBestPrices(),
+  ]);
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-200 to-white">
       <Header />
 
       {/* Hero Section */}
-      <section className="container mx-auto px-4 py-20 text-center">
+      <section className="container mx-auto px-4 py-16 text-center">
         <h2 className="text-5xl font-bold mb-6 text-gray-900">
           Finn de beste matvareprisene
         </h2>
-        <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-          Sammenlign priser fra flere butikker og få varsler når favorittvarene dine er på tilbud.
-          Spar penger på hver handletur.
+        <p className="text-xl text-gray-600 mb-4 max-w-2xl mx-auto">
+          Sammenlign priser fra flere butikker og spar penger på hver handletur.
         </p>
-        <div className="flex gap-4 justify-center items-center flex-wrap">
-          <Link href="/auth/signup">
-            <Button size="lg" className="text-lg px-8">
-              Begynn å spare nå
-            </Button>
-          </Link>
+
+        {/* Søkefelt */}
+        <HomepageSearch />
+
+        <div className="flex gap-4 justify-center items-center flex-wrap mt-6">
           <Link href="/pricelist">
             <Button size="lg" variant="outline" className="text-lg px-8">
-              Se priser
+              Se alle priser
+            </Button>
+          </Link>
+          <Link href="/auth/signup">
+            <Button size="lg" className="text-lg px-8">
+              Opprett konto
             </Button>
           </Link>
         </div>
+
         {sekRate && (
           <div className="flex flex-col items-center mt-6 max-w-2xl mx-auto">
             <p className="text-sm font-medium text-gray-800 mb-1">Handler du i Sverige? Her er valutakursen.</p>
@@ -57,6 +115,39 @@ export default async function Home() {
           </div>
         )}
       </section>
+
+      {/* Live prisdata */}
+      {bestPrices.length > 0 && (
+        <section className="container mx-auto px-4 pb-12">
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-2xl font-bold">Beste priser akkurat nå</h3>
+            <Link href="/pricelist" className="text-sm text-blue-600 hover:underline">
+              Se alle priser →
+            </Link>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            {bestPrices.map(({ name, good, best, storeCount }) => (
+              <Link key={name} href={`/pricelist?q=${encodeURIComponent(name)}`}>
+                <div className="bg-white rounded-xl border hover:shadow-md transition-shadow p-4 h-full flex flex-col justify-between cursor-pointer">
+                  <div>
+                    <p className="text-xs text-gray-400 mb-1">{good.category}</p>
+                    <p className="font-semibold text-sm leading-tight mb-3">{name}</p>
+                  </div>
+                  <div>
+                    <p className="text-xl font-bold text-green-600">
+                      {best.currency.symbol} {Number(best.price).toLocaleString('nb-NO')}
+                    </p>
+                    <p className="text-xs text-gray-500 mt-0.5">{best.store.name}</p>
+                    {storeCount > 1 && (
+                      <p className="text-xs text-gray-400 mt-1">{storeCount} butikker</p>
+                    )}
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* How It Works */}
       <section className="bg-blue-50 py-16">
