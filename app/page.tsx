@@ -18,6 +18,9 @@ interface PriceEntry {
 
 async function getBestPrices() {
   const supabase = await createClient();
+  const sixMonthsAgo = new Date();
+  sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+
   const { data: prices } = await supabase
     .from('prices')
     .select(`
@@ -26,8 +29,9 @@ async function getBestPrices() {
       store:stores(name),
       currency:currencies(symbol)
     `)
+    .gte('date', sixMonthsAgo.toISOString().split('T')[0])
     .order('date', { ascending: false })
-    .limit(300);
+    .limit(500);
 
   if (!prices || prices.length === 0) return [];
 
@@ -42,14 +46,19 @@ async function getBestPrices() {
     }
   }
 
-  // For each good, find the lowest price entry
-  const bestPerGood = Object.entries(grouped).map(([name, { good, latestByStore }]) => {
-    const entries = Array.from(latestByStore.values());
-    const best = entries.reduce((min, p) => (p.price < min.price ? p : min));
-    return { name, good, best, storeCount: entries.length };
-  });
+  // For each good with prices in 2+ stores, calculate % spread between highest and lowest price
+  const bestPerGood = Object.entries(grouped)
+    .map(([name, { good, latestByStore }]) => {
+      const entries = Array.from(latestByStore.values());
+      if (entries.length < 2) return null;
+      const best = entries.reduce((min, p) => (p.price < min.price ? p : min));
+      const worst = entries.reduce((max, p) => (p.price > max.price ? p : max));
+      const spreadPercent = ((worst.price - best.price) / best.price) * 100;
+      return { name, good, best, storeCount: entries.length, spreadPercent };
+    })
+    .filter((x): x is NonNullable<typeof x> => x !== null)
+    .sort((a, b) => b.spreadPercent - a.spreadPercent);
 
-  // Return up to 6, sorted by most recently updated
   return bestPerGood.slice(0, 6);
 }
 
@@ -120,13 +129,13 @@ export default async function Home() {
       {bestPrices.length > 0 && (
         <section className="container mx-auto px-4 pb-12">
           <div className="flex justify-between items-center mb-6">
-            <h3 className="text-2xl font-bold">Beste priser akkurat nå</h3>
+            <h3 className="text-2xl font-bold">Størst prisforskjell mellom butikker</h3>
             <Link href="/pricelist" className="text-sm text-blue-600 hover:underline">
               Se alle priser →
             </Link>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            {bestPrices.map(({ name, good, best, storeCount }) => (
+            {bestPrices.map(({ name, good, best, storeCount, spreadPercent }) => (
               <Link key={name} href={`/pricelist?q=${encodeURIComponent(name)}`}>
                 <div className="bg-white rounded-xl border hover:shadow-md transition-shadow p-4 h-full flex flex-col justify-between cursor-pointer">
                   <div>
@@ -138,9 +147,9 @@ export default async function Home() {
                       {best.currency.symbol} {Number(best.price).toLocaleString('nb-NO')}
                     </p>
                     <p className="text-xs text-gray-500 mt-0.5">{best.store.name}</p>
-                    {storeCount > 1 && (
-                      <p className="text-xs text-gray-400 mt-1">{storeCount} butikker</p>
-                    )}
+                    <p className="text-xs text-orange-500 font-medium mt-1">
+                      Spar {spreadPercent.toFixed(0)} % • {storeCount} butikker
+                    </p>
                   </div>
                 </div>
               </Link>
