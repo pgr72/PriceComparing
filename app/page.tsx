@@ -33,7 +33,7 @@ async function getBestPrices() {
 
   // Group by good, keep latest price per store
   const grouped: Record<string, { good: PriceEntry['good']; latestByStore: Map<string, PriceEntry> }> = {};
-  for (const p of prices as PriceEntry[]) {
+  for (const p of prices as unknown as PriceEntry[]) {
     const name = p.good.name;
     if (!grouped[name]) grouped[name] = { good: p.good, latestByStore: new Map() };
     const existing = grouped[name].latestByStore.get(p.store.name);
