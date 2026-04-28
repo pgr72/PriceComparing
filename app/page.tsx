@@ -121,7 +121,7 @@ export default async function Home() {
       {bestPrices.length > 0 && (
         <section className="container mx-auto px-4 pb-12">
           <div className="flex justify-between items-center mb-6">
-            <h3 className="text-2xl font-bold">Størst prisforskjell mellom butikker</h3>
+            <h3 className="text-2xl font-bold">Varer du kan spare mest på – størst prisforskjell mellom butikker</h3>
             <Link href="/pricelist" className="text-sm text-blue-600 hover:underline">
               Se alle priser →
             </Link>
