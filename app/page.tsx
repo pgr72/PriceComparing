@@ -53,7 +53,7 @@ async function getBestPrices() {
       if (entries.length < 2) return null;
       const best = entries.reduce((min, p) => (p.price < min.price ? p : min));
       const worst = entries.reduce((max, p) => (p.price > max.price ? p : max));
-      const spreadPercent = ((worst.price - best.price) / best.price) * 100;
+      const spreadPercent = ((worst.price - best.price) / worst.price) * 100;
       return { name, good, best, storeCount: entries.length, spreadPercent };
     })
     .filter((x): x is NonNullable<typeof x> => x !== null)
