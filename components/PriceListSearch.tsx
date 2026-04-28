@@ -149,7 +149,7 @@ export default function PriceListSearch({ groupedPrices, initialQuery = '' }: Pr
               latestByStore.set(p.store.name, p);
             }
           }
-          const visiblePrices = Array.from(latestByStore.values());
+          const visiblePrices = Array.from(latestByStore.values()).sort((a, b) => a.price - b.price);
 
           const lowestPrice = visiblePrices.reduce((min, p) =>
             p.price < min.price ? p : min
