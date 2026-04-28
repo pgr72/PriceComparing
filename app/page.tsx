@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { fetchAndStoreLatestSEKRate } from "@/lib/norgesbank";
 import Header from "@/components/Header";
 import HomepageSearch from "@/components/HomepageSearch";
@@ -74,56 +73,49 @@ export default async function Home() {
 
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-16 text-center">
-        <h2 className="text-5xl font-bold mb-6 text-gray-900">
+        <h2 className="text-5xl font-bold mb-4 text-gray-900">
           Finn de beste matvareprisene
         </h2>
-        <p className="text-xl text-gray-600 mb-4 max-w-2xl mx-auto">
+        <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
           Sammenlign priser fra flere butikker og spar penger på hver handletur.
         </p>
 
-        {/* Søkefelt */}
+        {/* Søkefelt — primær handling */}
         <HomepageSearch />
 
-        <div className="flex gap-4 justify-center items-center flex-wrap mt-6">
-          <Link href="/pricelist">
-            <Button size="lg" variant="outline" className="text-lg px-8">
-              Se alle priser
-            </Button>
+        {/* Sekundære lenker */}
+        <div className="flex gap-6 justify-center items-center mt-4 text-sm">
+          <Link href="/pricelist" className="text-blue-600 hover:underline font-medium">
+            Se alle priser
           </Link>
-          <Link href="/auth/signup">
-            <Button size="lg" className="text-lg px-8">
-              Opprett konto
-            </Button>
+          <span className="text-gray-300">·</span>
+          <Link href="/auth/signup" className="text-blue-600 hover:underline font-medium">
+            Opprett gratis konto
           </Link>
         </div>
-
-        {sekRate && (
-          <div className="flex flex-col items-center mt-6 max-w-2xl mx-auto">
-            <p className="text-sm font-medium text-gray-800 mb-1">Handler du i Sverige? Her er valutakursen.</p>
-            <div className="flex items-center gap-3 flex-wrap justify-center">
-              <Link href="/prishistorikk#valutakurs">
-                <div className="flex items-center gap-2 border rounded-lg px-3 py-2 bg-white text-sm hover:shadow-md transition-shadow cursor-pointer">
-                  <span className="text-gray-500 font-medium">Valutakurs</span>
-                  <span className="text-gray-400">|</span>
-                  <span className="text-gray-500">SEK/NOK</span>
-                  <span className="font-bold text-blue-700">
-                    {Number(sekRate.rate).toLocaleString('nb-NO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                  </span>
-                  <span className="text-xs text-gray-400">
-                    ({new Date(sekRate.date).toLocaleDateString('nb-NO', { day: '2-digit', month: '2-digit' })})
-                  </span>
-                </div>
-              </Link>
-              <Link href="/harryhandel">
-                <div className="flex items-center gap-2 border rounded-lg px-3 py-2 bg-white text-sm hover:shadow-md transition-shadow cursor-pointer">
-                  <span className="font-medium text-blue-700">Harryhandel</span>
-                  <span className="text-gray-400">&#8594;</span>
-                </div>
-              </Link>
-            </div>
-          </div>
-        )}
       </section>
+
+      {/* Info-stripe: valutakurs og Harryhandel */}
+      {sekRate && (
+        <div className="border-y bg-white py-3">
+          <div className="container mx-auto px-4 flex items-center justify-center gap-6 flex-wrap text-sm">
+            <span className="text-gray-500">Handler du i Sverige?</span>
+            <Link href="/prishistorikk#valutakurs" className="flex items-center gap-2 hover:text-blue-700 transition-colors">
+              <span className="text-gray-500">SEK/NOK</span>
+              <span className="font-bold text-blue-700">
+                {Number(sekRate.rate).toLocaleString('nb-NO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </span>
+              <span className="text-xs text-gray-400">
+                ({new Date(sekRate.date).toLocaleDateString('nb-NO', { day: '2-digit', month: '2-digit' })})
+              </span>
+            </Link>
+            <span className="text-gray-300">·</span>
+            <Link href="/harryhandel" className="font-medium text-blue-600 hover:underline">
+              Se Harryhandel-liste →
+            </Link>
+          </div>
+        </div>
+      )}
 
       {/* Live prisdata */}
       {bestPrices.length > 0 && (
