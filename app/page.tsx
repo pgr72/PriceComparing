@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { fetchAndStoreLatestSEKRate } from "@/lib/norgesbank";
+import { fetchAndStoreLatestSEKRate, fetchSEKRateHistory } from "@/lib/norgesbank";
 import Header from "@/components/Header";
 import HomepageSearch from "@/components/HomepageSearch";
 import { createClient } from "@/lib/supabase/server";
@@ -129,11 +129,16 @@ async function getBestPrices() {
 }
 
 export default async function Home() {
-  const [sekRate, bestPrices, newsItems] = await Promise.all([
+  const [sekRate, sekHistory, bestPrices, newsItems] = await Promise.all([
     fetchAndStoreLatestSEKRate(),
+    fetchSEKRateHistory(30),
     getBestPrices(),
     getNewsItems(),
   ]);
+
+  const sekTrend = sekHistory.length >= 2
+    ? ((sekHistory[sekHistory.length - 1].rate - sekHistory[0].rate) / sekHistory[0].rate) * 100
+    : null;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-200 to-white">
@@ -167,15 +172,22 @@ export default async function Home() {
           <div className="mt-6 border rounded-xl bg-white/70 py-3 max-w-xl mx-auto">
             <div className="flex items-center justify-center gap-6 flex-wrap text-sm px-4">
               <span className="text-gray-500">Handler du i Sverige?</span>
-              <Link href="/prishistorikk#valutakurs" className="flex items-center gap-2 hover:text-blue-700 transition-colors">
-                <span className="text-gray-500">SEK/NOK</span>
-                <span className="font-bold text-blue-700">
-                  {Number(sekRate.rate).toLocaleString('nb-NO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                </span>
-                <span className="text-xs text-gray-400">
-                  ({new Date(sekRate.date).toLocaleDateString('nb-NO', { day: '2-digit', month: '2-digit' })})
-                </span>
-              </Link>
+              <div className="flex flex-col items-center gap-0.5">
+                <Link href="/prishistorikk#valutakurs" className="flex items-center gap-2 hover:text-blue-700 transition-colors">
+                  <span className="text-gray-500">SEK/NOK</span>
+                  <span className="font-bold text-blue-700">
+                    {Number(sekRate.rate).toLocaleString('nb-NO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </span>
+                  <span className="text-xs text-gray-400">
+                    ({new Date(sekRate.date).toLocaleDateString('nb-NO', { day: '2-digit', month: '2-digit' })})
+                  </span>
+                </Link>
+                {sekTrend !== null && (
+                  <span className={`text-xs font-medium ${sekTrend > 0 ? 'text-red-500' : 'text-green-600'}`}>
+                    {sekTrend > 0 ? '↑' : '↓'} {Math.abs(sekTrend).toFixed(1)} % siste 30 dager — SEK er {sekTrend > 0 ? 'sterkere' : 'svakere'} (Sverige {sekTrend > 0 ? 'dyrere' : 'billigere'})
+                  </span>
+                )}
+              </div>
               <span className="text-gray-300">·</span>
               <Link href="/harryhandel" className="font-medium text-blue-600 hover:underline">
                 Se Harryhandel-liste →
