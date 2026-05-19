@@ -15,6 +15,73 @@ interface PriceEntry {
   currency: { symbol: string };
 }
 
+interface NewsItem {
+  goodName: string;
+  storeName: string;
+  changePercent: number;
+  latestPrice: number;
+  prevPrice: number;
+  currencySymbol: string;
+}
+
+async function getNewsItems() {
+  const supabase = await createClient();
+  const threeMonthsAgo = new Date();
+  threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+
+  const { data: prices } = await supabase
+    .from('prices')
+    .select(`
+      id, price, date,
+      good:goods(name, unit, category),
+      store:stores(name),
+      currency:currencies(symbol)
+    `)
+    .gte('date', threeMonthsAgo.toISOString().split('T')[0])
+    .order('date', { ascending: false })
+    .limit(600);
+
+  if (!prices || prices.length === 0) return { cheaper: [], expensive: [] };
+
+  const typedPrices = prices as unknown as PriceEntry[];
+
+  // Group by good+store, entries already sorted newest first
+  const byGoodStore: Record<string, PriceEntry[]> = {};
+  for (const p of typedPrices) {
+    const key = `${p.good.name}__${p.store.name}`;
+    if (!byGoodStore[key]) byGoodStore[key] = [];
+    byGoodStore[key].push(p);
+  }
+
+  const cheaper: NewsItem[] = [];
+  const expensive: NewsItem[] = [];
+
+  for (const entries of Object.values(byGoodStore)) {
+    if (entries.length < 2) continue;
+    const latest = entries[0];
+    const prev = entries[1];
+    const changePercent = ((latest.price - prev.price) / prev.price) * 100;
+    if (Math.abs(changePercent) < 3) continue;
+
+    const item: NewsItem = {
+      goodName: latest.good.name,
+      storeName: latest.store.name,
+      changePercent,
+      latestPrice: latest.price,
+      prevPrice: prev.price,
+      currencySymbol: latest.currency.symbol,
+    };
+
+    if (changePercent < 0) cheaper.push(item);
+    else expensive.push(item);
+  }
+
+  cheaper.sort((a, b) => a.changePercent - b.changePercent);
+  expensive.sort((a, b) => b.changePercent - a.changePercent);
+
+  return { cheaper: cheaper.slice(0, 4), expensive: expensive.slice(0, 4) };
+}
+
 async function getBestPrices() {
   const supabase = await createClient();
   const sixMonthsAgo = new Date();
@@ -62,9 +129,10 @@ async function getBestPrices() {
 }
 
 export default async function Home() {
-  const [sekRate, bestPrices] = await Promise.all([
+  const [sekRate, bestPrices, newsItems] = await Promise.all([
     fetchAndStoreLatestSEKRate(),
     getBestPrices(),
+    getNewsItems(),
   ]);
 
   return (
@@ -149,6 +217,70 @@ export default async function Home() {
             ))}
           </div>
         </div>
+        </section>
+      )}
+
+      {/* Prisnyheter */}
+      {(newsItems.cheaper.length > 0 || newsItems.expensive.length > 0) && (
+        <section className="container mx-auto px-4 py-12">
+          <h3 className="text-2xl font-bold mb-6">Prisnyheter siste 3 måneder</h3>
+          <div className="grid md:grid-cols-2 gap-6">
+
+            {/* Blitt billigere */}
+            {newsItems.cheaper.length > 0 && (
+              <div className="bg-green-50 border border-green-200 rounded-xl p-5">
+                <h4 className="font-semibold text-green-800 mb-4 flex items-center gap-2">
+                  <span>↓</span> Blitt billigere
+                </h4>
+                <div className="space-y-3">
+                  {newsItems.cheaper.map((item, i) => (
+                    <Link key={i} href={`/pricelist?q=${encodeURIComponent(item.goodName)}`}>
+                      <div className="flex justify-between items-center bg-white rounded-lg px-4 py-3 hover:shadow-sm transition-shadow">
+                        <div>
+                          <p className="font-medium text-sm">{item.goodName}</p>
+                          <p className="text-xs text-gray-500">{item.storeName}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-green-600 font-bold text-sm">{item.changePercent.toFixed(1)} %</p>
+                          <p className="text-xs text-gray-400">
+                            {item.currencySymbol} {Number(item.prevPrice).toLocaleString('nb-NO')} → {Number(item.latestPrice).toLocaleString('nb-NO')}
+                          </p>
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Blitt dyrere */}
+            {newsItems.expensive.length > 0 && (
+              <div className="bg-red-50 border border-red-200 rounded-xl p-5">
+                <h4 className="font-semibold text-red-800 mb-4 flex items-center gap-2">
+                  <span>↑</span> Blitt dyrere
+                </h4>
+                <div className="space-y-3">
+                  {newsItems.expensive.map((item, i) => (
+                    <Link key={i} href={`/pricelist?q=${encodeURIComponent(item.goodName)}`}>
+                      <div className="flex justify-between items-center bg-white rounded-lg px-4 py-3 hover:shadow-sm transition-shadow">
+                        <div>
+                          <p className="font-medium text-sm">{item.goodName}</p>
+                          <p className="text-xs text-gray-500">{item.storeName}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-red-500 font-bold text-sm">+{item.changePercent.toFixed(1)} %</p>
+                          <p className="text-xs text-gray-400">
+                            {item.currencySymbol} {Number(item.prevPrice).toLocaleString('nb-NO')} → {Number(item.latestPrice).toLocaleString('nb-NO')}
+                          </p>
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+
+          </div>
         </section>
       )}
 
