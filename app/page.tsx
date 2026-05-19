@@ -169,13 +169,25 @@ export default async function Home() {
 
         {/* Info-stripe: valutakurs og Harryhandel */}
         {sekRate && (
-          <div className="mt-6 border rounded-xl bg-white/70 py-4 max-w-xl mx-auto px-5">
+          <div className="mt-6 rounded-xl overflow-hidden max-w-xl mx-auto border">
             {sekTrend !== null && (
-              <p className={`text-sm font-semibold mb-3 ${sekTrend > 0 ? 'text-red-500' : 'text-green-600'}`}>
-                {sekTrend > 0 ? '↑' : '↓'} SEK er {Math.abs(sekTrend).toFixed(1)} % {sekTrend > 0 ? 'sterkere' : 'svakere'} siste 30 dager — Sverige har blitt {sekTrend > 0 ? 'dyrere' : 'billigere'}
-              </p>
+              <div className={`px-5 py-4 ${sekTrend > 0 ? 'bg-red-50 border-b border-red-200' : 'bg-green-50 border-b border-green-200'}`}>
+                <div className="flex items-center justify-center gap-4">
+                  <span className={`text-4xl font-extrabold ${sekTrend > 0 ? 'text-red-500' : 'text-green-600'}`}>
+                    {sekTrend > 0 ? '↑' : '↓'} {Math.abs(sekTrend).toFixed(1)} %
+                  </span>
+                  <div className="text-left">
+                    <p className={`text-sm font-semibold ${sekTrend > 0 ? 'text-red-700' : 'text-green-700'}`}>
+                      SEK er {sekTrend > 0 ? 'sterkere' : 'svakere'} siste 30 dager
+                    </p>
+                    <p className={`text-xs ${sekTrend > 0 ? 'text-red-500' : 'text-green-600'}`}>
+                      Sverige har blitt {sekTrend > 0 ? 'dyrere' : 'billigere'} for norske handlere
+                    </p>
+                  </div>
+                </div>
+              </div>
             )}
-            <div className="flex items-center justify-center gap-6 flex-wrap text-sm">
+            <div className="bg-white/70 py-3 px-5 flex items-center justify-center gap-6 flex-wrap text-sm">
               <span className="text-gray-500">Handler du i Sverige?</span>
               <Link href="/prishistorikk#valutakurs" className="flex items-center gap-2 hover:text-blue-700 transition-colors">
                 <span className="text-gray-500">SEK/NOK</span>
